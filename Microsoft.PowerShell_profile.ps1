@@ -256,6 +256,41 @@ Set-PSReadLineOption -Colors @{
     String = 'DarkCyan'
 }
 
+# 
+function unzipall {
+    param (
+        [string]$folder,
+        [string]$seven_zip = "D:\scoop\apps\7zip\current\7z.exe"
+    )
+
+    if (-not (Test-Path $folder -PathType Container)) {
+        Write-Host "Folder does not exist."
+        return
+    }
+
+    Set-Location -Path $folder
+    $zip_count = 0
+
+    Get-ChildItem -Filter "*.zip" | ForEach-Object {
+        Write-Host "Extracting $_..."
+        & $seven_zip x "$_" -o"$($_.DirectoryName)\$($_.BaseName)"
+        $zip_count++
+    }
+
+    Write-Host "All ZIP files extracted successfully."
+    Write-Host "Total number of ZIP files found: $zip_count"
+
+    $delete_files = Read-Host "Do you want to delete the extracted ZIP files? (Y/N)"
+    if ($delete_files -eq "Y") {
+        Remove-Item -Path "*.zip"
+        Write-Host "Extracted ZIP files deleted successfully."
+    } else {
+        Write-Host "Extracted ZIP files not deleted."
+    }
+}
+
+
+
 ## Final Line to set prompt
 oh-my-posh init pwsh --config https://raw.githubusercontent.com/JanDeDobbeleer/oh-my-posh/main/themes/cobalt2.omp.json | Invoke-Expression
 if (Get-Command zoxide -ErrorAction SilentlyContinue) {
