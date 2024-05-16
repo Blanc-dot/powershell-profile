@@ -1,6 +1,3 @@
-### PowerShell Profile Refactor
-### Version 1.03 - Refactored
-
 # Initial GitHub.com connectivity check with 1 second timeout
 $canConnectToGitHub = Test-Connection github.com -Count 1 -Quiet -Delay 1
 
@@ -292,6 +289,50 @@ function unzipall {
         Write-Host "Extracted archives not deleted."
     }
 }
+
+# Script to move files from subdirectories to the root directory
+function Defolder {
+    # Prompt the user to enter the root directory path
+    $rootDir = Read-Host "Enter the root directory path"
+
+    # Check if the entered directory exists
+    if (-not (Test-Path $rootDir -PathType Container)) {
+        Write-Host "The specified directory does not exist."
+        return
+    }
+
+    # Get a list of all subdirectories within the root directory
+    $subDirs = Get-ChildItem -Path $rootDir -Directory
+
+    # Iterate through each subdirectory
+    foreach ($subDir in $subDirs) {
+        # Get a list of all files within the subdirectory
+        $files = Get-ChildItem -Path $subDir.FullName -File
+        
+        # Move each file to the root directory
+        foreach ($file in $files) {
+            Move-Item -Path $file.FullName -Destination $rootDir -Force
+        }
+        
+        # Remove the now-empty subdirectory
+        Remove-Item -Path $subDir.FullName -Force -Recurse
+    }
+
+    # Ask the user if they want to delete the root directory
+    $deleteRootDir = Read-Host "Do you want to delete the root directory? (Y/N)"
+    if ($deleteRootDir -eq "Y" -or $deleteRootDir -eq "y") {
+        Remove-Item -Path $rootDir -Force -Recurse
+        Write-Host "Root directory deleted successfully!"
+    } else {
+        Write-Host "Root directory not deleted."
+    }
+
+    Write-Host "All files moved successfully!"
+}
+
+# Add Defolder function to PowerShell profile
+Add-Content $PROFILE "`nDefolder"
+
 
 
 # Scoop Install
