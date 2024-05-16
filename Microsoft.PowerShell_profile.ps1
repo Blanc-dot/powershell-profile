@@ -313,7 +313,7 @@ function Setup-Anime {
         scoop bucket add extras
     }
     # Install desired packages
-    scoop install ani-cli, fzf, mpv, git
+    scoop install ani-cli fzf mpv git yt-dlp
 }
 
 # Call the function to set up Scoop
