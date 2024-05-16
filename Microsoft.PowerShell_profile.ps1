@@ -256,7 +256,7 @@ Set-PSReadLineOption -Colors @{
     String = 'DarkCyan'
 }
 
-# 
+# Unzip All with 7zip
 function unzipall {
     param (
         [string]$folder,
@@ -269,25 +269,30 @@ function unzipall {
     }
 
     Set-Location -Path $folder
-    $zip_count = 0
+    $archive_count = 0
 
-    Get-ChildItem -Filter "*.zip" | ForEach-Object {
+    Get-ChildItem -Filter "*.zip" -or "*.7z" | ForEach-Object {
         Write-Host "Extracting $_..."
-        & $seven_zip x "$_" -o"$($_.DirectoryName)\$($_.BaseName)"
-        $zip_count++
+        if ($_.Extension -eq ".zip") {
+            & $seven_zip x "$_" -o"$($_.DirectoryName)\$($_.BaseName)"
+        } elseif ($_.Extension -eq ".7z") {
+            & $seven_zip x "$_" -o"$($_.DirectoryName)\$($_.BaseName)"
+        }
+        $archive_count++
     }
 
-    Write-Host "All ZIP files extracted successfully."
-    Write-Host "Total number of ZIP files found: $zip_count"
+    Write-Host "All archives extracted successfully."
+    Write-Host "Total number of archives found: $archive_count"
 
-    $delete_files = Read-Host "Do you want to delete the extracted ZIP files? (Y/N)"
+    $delete_files = Read-Host "Do you want to delete the extracted archives? (Y/N)"
     if ($delete_files -eq "Y") {
-        Remove-Item -Path "*.zip"
-        Write-Host "Extracted ZIP files deleted successfully."
+        Remove-Item -Path "*.zip" -or "*.7z"
+        Write-Host "Extracted archives deleted successfully."
     } else {
-        Write-Host "Extracted ZIP files not deleted."
+        Write-Host "Extracted archives not deleted."
     }
 }
+
 
 # Scoop Install
 function Install-Scoop {
