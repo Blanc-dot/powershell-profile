@@ -289,7 +289,38 @@ function unzipall {
     }
 }
 
-# Anime
+# Scoop Install
+function Install-Scoop {
+    param (
+        [string]$InstallPath = "D:\scoop"
+    )
+
+    if (-not (Test-Path $InstallPath)) {
+        Set-ExecutionPolicy RemoteSigned -Scope CurrentUser -Force
+        iex (New-Object System.Net.WebClient).DownloadString("https://get.scoop.sh")
+        $scoopPath = Join-Path -Path $InstallPath -ChildPath "scoop"
+        Move-Item $env:SCOOP $scoopPath -Force
+        $env:SCOOP = $scoopPath
+    } else {
+        Write-Output "Scoop is already installed at $InstallPath."
+    }
+}
+
+# Setup Ani-cli
+function Setup-Anime {
+    # Add the 'extras' bucket if it's not already added
+    if (-not (scoop bucket list | Select-String -SimpleMatch 'extras')) {
+        scoop bucket add extras
+    }
+    # Install desired packages
+    scoop install ani-cli, fzf, mpv, git
+}
+
+# Call the function to set up Scoop
+Setup-Anime
+
+
+# Watch Anime
 Set-Alias -Name anime -Value ani-cli
 
 ## Final Line to set prompt
