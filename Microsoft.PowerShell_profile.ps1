@@ -45,10 +45,11 @@ function Update-PowerShell {
     try {
         Write-Host "Checking for PowerShell updates..." -ForegroundColor Cyan
         $updateNeeded = $false
-        $currentVersion = $PSVersionTable.PSVersion.ToString()
+        $currentVersion = [version]$PSVersionTable.PSVersion.ToString()
         $gitHubApiUrl = "https://api.github.com/repos/PowerShell/PowerShell/releases/latest"
         $latestReleaseInfo = Invoke-RestMethod -Uri $gitHubApiUrl
-        $latestVersion = $latestReleaseInfo.tag_name.Trim('v')
+        $latestVersion = [version]$latestReleaseInfo.tag_name.Trim('v')
+        
         if ($currentVersion -lt $latestVersion) {
             $updateNeeded = $true
         }
@@ -65,7 +66,6 @@ function Update-PowerShell {
     }
 }
 Update-PowerShell
-
 
 # Admin Check and Prompt Customization
 $isAdmin = ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)
