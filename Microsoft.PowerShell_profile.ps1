@@ -335,29 +335,22 @@ function Defolder {
         foreach ($file in $files) {
             Move-Item -Path $file.FullName -Destination $rootDir -Force
         }
-        
-        # Remove the now-empty subdirectory
-        Remove-Item -Path $subDir.FullName -Force -Recurse
     }
 
-    # Ask the user if they want to delete the root directory
-    $deleteRootDir = Read-Host "Do you want to delete the root directory? (Y/N)"
-    if ($deleteRootDir -eq "Y" -or $deleteRootDir -eq "y") {
-        Remove-Item -Path $rootDir -Force -Recurse
-        Write-Host "Root directory deleted successfully!"
+    # Ask the user if they want to delete the subdirectories
+    $deleteSubDirs = Read-Host "Do you want to delete the subdirectories? (Y/N)"
+    if ($deleteSubDirs -eq "Y" -or $deleteSubDirs -eq "y") {
+        foreach ($subDir in $subDirs) {
+            # Remove the now-empty subdirectory
+            Remove-Item -Path $subDir.FullName -Force -Recurse
+        }
+        Write-Host "Subdirectories deleted successfully!"
     } else {
-        Write-Host "Root directory not deleted."
+        Write-Host "Subdirectories not deleted."
     }
 
     Write-Host "All files moved successfully!"
 }
-
-# Check if the script is being run interactively
-if ($MyInvocation.InvocationName -eq "Defolder") {
-    # Call the function only when invoked explicitly
-    Defolder
-}
-
 
 # Auto disable power management on USB devices
 function Disable-PowerManagement {
