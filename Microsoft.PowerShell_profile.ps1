@@ -290,7 +290,7 @@ function unzipall {
     }
 }
 
-# Script to move files from subdirectories to the root directory
+# Function to move files from subdirectories to the root directory
 function Defolder {
     # Prompt the user to enter the root directory path
     $rootDir = Read-Host "Enter the root directory path"
@@ -330,10 +330,22 @@ function Defolder {
     Write-Host "All files moved successfully!"
 }
 
-# Add Defolder function to PowerShell profile
-Add-Content $PROFILE "`nDefolder"
+# Auto disable power management on USB devices
+function Disable-PowerManagement {
+    $hubs = Get-WmiObject Win32_Serialport | Select-Object Name,DeviceID,Description
+    $powerMgmt = Get-WmiObject MSPower_DeviceEnable -Namespace root\wmi
 
-
+    foreach ($p in $powerMgmt) {
+        $IN = $p.InstanceName.ToUpper()
+        foreach ($h in $hubs) {
+            $PNPDI = $h.PNPDeviceID
+            if ($IN -like "*$PNPDI*") {
+                $p.enable = $False
+                $p.psbase.put()
+            }
+        }
+    }
+}
 
 # Scoop Install
 function Install-Scoop {
@@ -364,7 +376,6 @@ function Setup-Anime {
 
 # Call the function to set up Scoop
 Setup-Anime
-
 
 # Watch Anime
 Set-Alias -Name anime -Value ani-cli
