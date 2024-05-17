@@ -255,35 +255,64 @@ Set-PSReadLineOption -Colors @{
 
 function unzipall {
     param (
-        [string]$folder,
-        [string]$seven_zip = "D:\scoop\apps\7zip\current\7z.exe"
+        [string]$Folder,
+        [string]$SevenZipExe = "D:\scoop\apps\7zip\current\7z.exe",
+        [switch]$Verbose
     )
 
-    if (-not (Test-Path $folder -PathType Container)) {
-        Write-Host "Folder does not exist."
+    # Check if the folder exists
+    if (-not (Test-Path $Folder -PathType Container)) {
+        Write-Host "Folder does not exist." -ForegroundColor Red
         return
     }
 
-    Set-Location -Path $folder
-    $archive_count = 0
+    # Set the location to the folder
+    Set-Location -Path $Folder
 
-    Get-ChildItem -Include "*.zip","*.7z" | ForEach-Object {
-        Write-Host "Extracting $_..."
-        & $seven_zip x "$_" -o"$($_.DirectoryName)\$($_.BaseName)"
-        $archive_count++
+    # Initialize archive count
+    $ArchiveCount = 0
+
+    # Get all zip and 7z files in the folder
+    $Archives = Get-ChildItem -Path $Folder -Include "*.zip", "*.7z"
+
+    # If no archives found, exit
+    if ($Archives.Count -eq 0) {
+        Write-Host "No archives found in $Folder." -ForegroundColor Yellow
+        return
     }
 
-    Write-Host "All archives extracted successfully."
-    Write-Host "Total number of archives found: $archive_count"
+    # Extract each archive
+    foreach ($Archive in $Archives) {
+        Write-Verbose "Extracting $($Archive.FullName)..."
+        $OutputFolder = Join-Path -Path $Folder -ChildPath $Archive.BaseName
+        $ExtractCommand = "& '$SevenZipExe' x '$Archive.FullName' -o'$OutputFolder'"
+        
+        # Try to extract the archive
+        try {
+            Invoke-Expression -Command $ExtractCommand
+            $ArchiveCount++
+            Write-Verbose "Archive $($Archive.Name) extracted successfully."
+        }
+        catch {
+            Write-Host "Error extracting $($Archive.Name)." -ForegroundColor Red
+            Write-Host $_.Exception.Message -ForegroundColor Red
+        }
+    }
 
-    $delete_files = Read-Host "Do you want to delete the extracted archives? (Y/N)"
-    if ($delete_files -eq "Y") {
-        Remove-Item -Path "*.zip","*.7z"
-        Write-Host "Extracted archives deleted successfully."
+    # Output summary
+    Write-Host "All archives extracted successfully." -ForegroundColor Green
+    Write-Host "Total number of archives found: $ArchiveCount" -ForegroundColor Green
+
+    # Prompt to delete extracted archives
+    $DeleteFiles = Read-Host "Do you want to delete the extracted archives? (Y/N)"
+    if ($DeleteFiles -eq "Y") {
+        Remove-Item -Path "$Folder\*.zip", "$Folder\*.7z" -ErrorAction SilentlyContinue
+        Write-Host "Extracted archives deleted successfully." -ForegroundColor Green
     } else {
-        Write-Host "Extracted archives not deleted."
+        Write-Host "Extracted archives not deleted." -ForegroundColor Yellow
     }
 }
+
 
 # Function to move files from subdirectories to the root directory
 function Defolder {
