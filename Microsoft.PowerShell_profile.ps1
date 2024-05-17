@@ -375,16 +375,31 @@ function Install-Scoop {
         [string]$InstallPath = "D:\scoop"
     )
 
-    if (-not (Test-Path $InstallPath)) {
-        Set-ExecutionPolicy RemoteSigned -Scope CurrentUser -Force
-        iex (New-Object System.Net.WebClient).DownloadString("https://get.scoop.sh")
-        $scoopPath = Join-Path -Path $InstallPath -ChildPath "scoop"
-        Move-Item $env:SCOOP $scoopPath -Force
-        $env:SCOOP = $scoopPath
+    # Prompt user for installation directory
+    $InstallPath = Read-Host "Enter the path for Scoop installation (default is D:\scoop):"
+
+    # Prompt user if they want to set up a global Scoop directory
+    $response = Read-Host "Do you want to set up a global Scoop directory? (Y/N):"
+
+    if ($response -eq "Y" -or $response -eq "y") {
+        $ScoopGlobalDir = Read-Host "Enter the path for the global Scoop directory:"
+        $command = "irm get.scoop.sh -outfile 'install.ps1'; .\install.ps1 -ScoopDir '$InstallPath' -ScoopGlobalDir '$ScoopGlobalDir' -NoProxy"
     } else {
-        Write-Output "Scoop is already installed at $InstallPath."
+        $command = "irm get.scoop.sh -outfile 'install.ps1'; .\install.ps1 -ScoopDir '$InstallPath' -NoProxy"
+    }
+
+    # Execute the installation command
+    try {
+        Invoke-Expression $command
+        Write-Host "Scoop has been installed successfully."
+    } catch {
+        Write-Error "Failed to install Scoop. Error: $_"
     }
 }
+
+# Call the function to install Scoop
+Install-Scoop
+
 
 # Setup Ani-cli
 function Setup-Anime {
