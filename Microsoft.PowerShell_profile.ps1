@@ -330,6 +330,13 @@ function Defolder {
     Write-Host "All files moved successfully!"
 }
 
+# Check if the script is being run interactively
+if ($MyInvocation.InvocationName -eq "Defolder") {
+    # Call the function only when invoked explicitly
+    Defolder
+}
+
+
 # Auto disable power management on USB devices
 function Disable-PowerManagement {
     $hubs = Get-WmiObject Win32_Serialport | Select-Object Name,DeviceID,Description
