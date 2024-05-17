@@ -397,9 +397,6 @@ function Install-Scoop {
     }
 }
 
-# Call the function to install Scoop
-Install-Scoop
-
 
 # Setup Ani-cli
 function Setup-Anime {
