@@ -253,7 +253,6 @@ Set-PSReadLineOption -Colors @{
     String = 'DarkCyan'
 }
 
-# Unzip All with 7zip
 function unzipall {
     param (
         [string]$folder,
@@ -268,13 +267,9 @@ function unzipall {
     Set-Location -Path $folder
     $archive_count = 0
 
-    Get-ChildItem -Filter "*.zip" -or "*.7z" | ForEach-Object {
+    Get-ChildItem -Include "*.zip","*.7z" | ForEach-Object {
         Write-Host "Extracting $_..."
-        if ($_.Extension -eq ".zip") {
-            & $seven_zip x "$_" -o"$($_.DirectoryName)\$($_.BaseName)"
-        } elseif ($_.Extension -eq ".7z") {
-            & $seven_zip x "$_" -o"$($_.DirectoryName)\$($_.BaseName)"
-        }
+        & $seven_zip x "$_" -o"$($_.DirectoryName)\$($_.BaseName)"
         $archive_count++
     }
 
@@ -283,7 +278,7 @@ function unzipall {
 
     $delete_files = Read-Host "Do you want to delete the extracted archives? (Y/N)"
     if ($delete_files -eq "Y") {
-        Remove-Item -Path "*.zip" -or "*.7z"
+        Remove-Item -Path "*.zip","*.7z"
         Write-Host "Extracted archives deleted successfully."
     } else {
         Write-Host "Extracted archives not deleted."
