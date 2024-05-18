@@ -258,7 +258,7 @@ function unzipall {
     param (
         [Parameter(Mandatory=$true, Position=0)]
         [string]$Folder,
-        [string]$SevenZipExe = "D:\scoop\apps\7zip\current\7z.exe"
+        [string]$SevenZipExe = "C:\scoop\apps\7zip\current\7z.exe"
     )
 
     Write-Host "Folder: $Folder"
@@ -372,11 +372,11 @@ function Disable-PowerManagement {
 # Scoop Install
 function Install-Scoop {
     param (
-        [string]$InstallPath = "D:\scoop"
+        [string]$InstallPath = "C:\scoop"
     )
 
     # Prompt user for installation directory
-    $InstallPath = Read-Host "Enter the path for Scoop installation (default is D:\scoop):"
+    $InstallPath = Read-Host "Enter the path for Scoop installation (default is C:\scoop):"
 
     # Prompt user if they want to set up a global Scoop directory
     $response = Read-Host "Do you want to set up a global Scoop directory? (Y/N):"
