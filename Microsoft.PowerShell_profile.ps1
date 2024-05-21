@@ -358,16 +358,16 @@ function Disable-PowerManagement {
     $powerMgmt = Get-WmiObject MSPower_DeviceEnable -Namespace root\wmi
     foreach ($p in $powerMgmt)
     {
-     $IN = $p.InstanceName.ToUpper()
-     foreach ($h in $hubs)
-     {
-      $PNPDI = $h.PNPDeviceID
-                if ($IN -like "*$PNPDI*")
-                {
-                     $p.enable = $False
-                     $p.psbase.put()
-                }
-     }
+        $IN = $p.InstanceName.ToUpper()
+        foreach ($h in $hubs)
+        {
+            $PNPDI = $h.PNPDeviceID
+            if ($IN -like "*$PNPDI*")
+            {
+                $p.enable = $False
+                $p.psbase.put()
+            }
+        }
     }
 }
 
