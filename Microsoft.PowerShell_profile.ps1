@@ -363,12 +363,11 @@ function Disable-PowerManagement {
             $PNPDI = $h.PNPDeviceID
             if ($IN -like "*$PNPDI*") {
                 $p.Enable = $False
-                $p.Put()
+                $p.InvokeMethod('Put', $null)
             }
         }
     }
 }
-
 
 # Scoop Install
 function Install-Scoop {
