@@ -353,23 +353,31 @@ function Defolder {
 }
 
 # Auto disable power management on USB devices
-function Disable-PowerManagement {
-    $hubs = Get-WmiObject Win32_Serialport | Select-Object Name,DeviceID,Description
-    $powerMgmt = Get-WmiObject MSPower_DeviceEnable -Namespace root\wmi
-    foreach ($p in $powerMgmt)
-    {
-        $IN = $p.InstanceName.ToUpper()
-        foreach ($h in $hubs)
-        {
-            $PNPDI = $h.PNPDeviceID
-            if ($IN -like "*$PNPDI*")
-            {
-                $p.enable = $False
-                $p.psbase.put()
-            }
+function Disable-PowermgmtAdmin {
+    Write-Host "Checking and disabling power management for USB devices..."
+
+    # Get all USB devices
+    $usbDevices = Get-PnpDevice | Where-Object { $_.Class -eq "USB" }
+
+    # Check if any USB devices are found
+    if ($usbDevices) {
+        Write-Host "Found $($usbDevices.Count) USB device(s) connected."
+        
+        # Loop through each USB device
+        foreach ($device in $usbDevices) {
+            Write-Host "Disabling power management for $($device.InstanceId)..."
+            # Disable power management
+            $registryPath = "HKLM:\SYSTEM\CurrentControlSet\Enum\$($device.InstanceId)\Device Parameters"
+            Set-ItemProperty -Path $registryPath -Name "DevicePowerManagementEnabled" -Value 0
+            Write-Host "Power management disabled for $($device.InstanceId)."
         }
     }
+    else {
+        Write-Host "No USB devices found."
+    }
 }
+
+
 
 # Scoop Install
 function Install-Scoop {
