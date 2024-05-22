@@ -2,6 +2,16 @@
 
 A stylish and functional PowerShell profile that looks and feels almost as good as a Linux terminal.
 
+## 🛠️ Prerequisites
+
+Download and install Powershell 7
+
+```
+https://github.com/PowerShell/PowerShell/releases
+```
+
+Configure Windows Terminal to use Powershell 7 by default.
+
 ## ⚡ One Line Install (Elevated PowerShell Recommended)
 
 Execute the following command in an elevated PowerShell window to install the PowerShell profile:
