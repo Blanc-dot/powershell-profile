@@ -1,3 +1,5 @@
+# End of life since moved to Linux. everything should stay working unless powershell changes some major stuff.
+
 # 🎨 PowerShell Profile (Pretty PowerShell)
 
 A stylish and functional PowerShell profile that looks and feels almost as good as a Linux terminal.
